@@ -5,6 +5,8 @@ global.THREE = require("three");
 require("three/examples/js/controls/OrbitControls");
 
 const canvasSketch = require("canvas-sketch");
+const random = require("canvas-sketch-util/random");
+const palettes = require("nice-color-palettes");
 
 const settings = {
   // Make the loop animated
@@ -28,22 +30,40 @@ const sketch = ({ context }) => {
   // Setup your scene
   const scene = new THREE.Scene();
 
-  // Setup a geometry
-  const geometry = new THREE.SphereGeometry(1, 32, 16);
+  // Create new palette
+  const palette = random.pick(palettes);
 
-  // Setup a material
-  const material = new THREE.MeshBasicMaterial({
-    color: "red",
-    wireframe: false,
-  });
+  // Setup a geometry
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
 
   // Setup a mesh with geometry + material
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 40; i++) {
+    // Setup a material
+    const material = new THREE.MeshStandardMaterial({
+      color: random.pick(palette),
+      wireframe: false,
+    });
+
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(Math.random(), Math.random(), Math.random());
-    mesh.scale.multiplyScalar(0.1);
+    mesh.position.set(
+      random.range(-1, 1),
+      random.range(-1, 1),
+      random.range(-1, 1)
+    );
+    mesh.scale.set(
+      random.range(-1, 1),
+      random.range(-1, 1),
+      random.range(-1, 1)
+    );
+    mesh.scale.multiplyScalar(0.5);
     scene.add(mesh);
   }
+
+  scene.add(new THREE.AmbientLight("hsl(0, 0%, 15%)"));
+
+  const light = new THREE.DirectionalLight("white", 1);
+  light.position.set(0, 0, 4);
+  scene.add(light);
 
   // draw each frame
   return {
@@ -56,7 +76,7 @@ const sketch = ({ context }) => {
       const aspect = viewportWidth / viewportHeight;
 
       // Ortho zoom
-      const zoom = 1.0;
+      const zoom = 2.0;
 
       // Bounds
       camera.left = -zoom * aspect;
@@ -77,6 +97,7 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
+      scene.rotation.y = time * 0.05;
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
