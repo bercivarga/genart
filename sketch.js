@@ -125,9 +125,9 @@ const sketch = ({ context }) => {
               time * 0.25
             );
       });
-      cubes.rotation.x = ease(time * 0);
-      cubes.rotation.y = ease(time * 0);
-      cubes.rotation.z = ease(time * 0);
+      cubes.rotation.x = ease(3);
+      cubes.rotation.y = ease(3);
+      cubes.rotation.z = ease(3);
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
