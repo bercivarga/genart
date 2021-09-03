@@ -7,12 +7,15 @@ require("three/examples/js/controls/OrbitControls");
 const canvasSketch = require("canvas-sketch");
 const random = require("canvas-sketch-util/random");
 const palettes = require("nice-color-palettes");
+const eases = require("eases");
+const BezierEasing = require("bezier-easing");
 
 const settings = {
   // Make the loop animated
   animate: true,
   // Get a WebGL canvas rather than 2D
   context: "webgl",
+  attributes: { antialias: true },
 };
 
 const sketch = ({ context }) => {
@@ -30,14 +33,21 @@ const sketch = ({ context }) => {
   // Setup your scene
   const scene = new THREE.Scene();
 
+  // Setup Object3D
+  const cubes = new THREE.Object3D();
+  scene.add(cubes);
+
   // Create new palette
   const palette = random.pick(palettes);
 
   // Setup a geometry
   const geometry = new THREE.BoxGeometry(1, 1, 1);
 
+  // Setup the cubes array
+  const cubesArr = [];
+
   // Setup a mesh with geometry + material
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 200; i++) {
     // Setup a material
     const material = new THREE.MeshStandardMaterial({
       color: random.pick(palette),
@@ -56,14 +66,20 @@ const sketch = ({ context }) => {
       random.range(-1, 1)
     );
     mesh.scale.multiplyScalar(0.5);
-    scene.add(mesh);
+
+    mesh.originalPosition = mesh.position.clone();
+
+    cubes.add(mesh);
+    cubesArr.push(mesh);
   }
 
-  scene.add(new THREE.AmbientLight("hsl(0, 0%, 15%)"));
+  scene.add(new THREE.AmbientLight("hsl(0, 0%, 90%)"));
 
   const light = new THREE.DirectionalLight("white", 1);
-  light.position.set(0, 0, 4);
+  light.position.set(0, 2, 4);
   scene.add(light);
+
+  const ease = BezierEasing(0.67, 0.03, 0.29, 0.99);
 
   // draw each frame
   return {
@@ -97,7 +113,21 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
-      scene.rotation.y = time * 0.05;
+      cubesArr.forEach((c) => {
+        const f = 0.5;
+        c.position.x =
+          c.originalPosition.x +
+          0.25 *
+            random.noise3D(
+              c.originalPosition.x * f,
+              c.originalPosition.y * f,
+              c.originalPosition.z * f,
+              time * 0.25
+            );
+      });
+      cubes.rotation.x = ease(time * 0);
+      cubes.rotation.y = ease(time * 0);
+      cubes.rotation.z = ease(time * 0);
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
