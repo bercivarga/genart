@@ -2,13 +2,13 @@
 global.THREE = require("three");
 
 // Include any additional ThreeJS examples below
-require("three/examples/js/controls/OrbitControls");
 
 const canvasSketch = require("canvas-sketch");
 const random = require("canvas-sketch-util/random");
 const palettes = require("nice-color-palettes");
 const eases = require("eases");
 const BezierEasing = require("bezier-easing");
+const OrbitControls = require("three/examples/js/controls/OrbitControls");
 
 const settings = {
   // Make the loop animated
@@ -29,6 +29,9 @@ const sketch = ({ context }) => {
 
   // Setup a camera
   const camera = new THREE.OrthographicCamera();
+  
+  const controls = new THREE.OrbitControls( camera, renderer.domElement );
+  controls.update();
 
   // Setup your scene
   const scene = new THREE.Scene();
@@ -128,6 +131,8 @@ const sketch = ({ context }) => {
       cubes.rotation.x = ease(3);
       cubes.rotation.y = ease(3);
       cubes.rotation.z = ease(3);
+      
+      controls.update();
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
