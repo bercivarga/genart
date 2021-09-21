@@ -29,7 +29,7 @@ const sketch = ({ context }) => {
 
   // Setup a camera
   const camera = new THREE.OrthographicCamera();
-  
+
   const controls = new THREE.OrbitControls( camera, renderer.domElement );
   controls.update();
 
@@ -131,7 +131,7 @@ const sketch = ({ context }) => {
       cubes.rotation.x = ease(3);
       cubes.rotation.y = ease(3);
       cubes.rotation.z = ease(3);
-      
+
       controls.update();
       renderer.render(scene, camera);
     },
